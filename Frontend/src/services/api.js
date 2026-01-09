@@ -1,17 +1,25 @@
-import axios from "axios";
 
-export const api = axios.create({
-  baseURL: "http://localhost:5000",
-});
-
-// 🔹 Use this ONLY when backend returns CMP only
+/**
+ * Fetch live CMP (and other optional metrics) for given symbols
+ *
+ * @param {string[]} symbols
+ * @returns {Promise<Object>}
+ */
 export const fetchCMP = async (symbols) => {
-  const res = await api.post("/api/stocks/prices", { symbols });
-  return res.data;
+  const response = await fetch("/api/stocks", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ symbols }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch live market data");
+  }
+
+  return response.json();
 };
 
-// 🔹 Use this AFTER Phase 7 (CMP + PE + Earnings)
-export const fetchStockData = async (symbols) => {
-  const res = await api.post("/api/stocks/prices", { symbols });
-  return res.data;
-};
+
+export const fetchStockData = fetchCMP;
